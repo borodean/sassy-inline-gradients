@@ -1,4 +1,4 @@
-import render from "../test-render";
+import { render } from "../test-render";
 
 test("$size validation", async () => {
   await expect(render("inline-linear-gradient()")).rejects.toThrow(

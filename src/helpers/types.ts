@@ -4,3 +4,8 @@ export type RawColorStop = {
 };
 
 export type ColorStop = Required<RawColorStop>;
+
+export type Options = {
+  optimize?: boolean;
+  resolver?: (result: Buffer) => string;
+};

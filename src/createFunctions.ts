@@ -1,22 +1,24 @@
 import { createCanvas } from "canvas";
+import imagemin from "imagemin";
+import imageminOptipng from "imagemin-optipng";
 import sass from "sass";
 
+import { AssertionError } from "./helpers/assertions";
+import { Options } from "./helpers/types";
 import parseAngle from "./parsers/parseAngle";
 import parseColorStops from "./parsers/parseColorStops";
 import parseSize from "./parsers/parseSize";
 
-type Options = {
-  resolver?: (result: Buffer) => string;
-};
-
 export default function createFunctions({
+  optimize = false,
   resolver = defaultResolver,
 }: Options = {}): sass.Options["functions"] {
   return {
     "inline-linear-gradient($size, $angle, $color-stops...)": (
       size,
       angle,
-      colorStops
+      colorStops,
+      done
     ) => {
       const parsedSize = parseSize(size, "$size");
       const parsedAngle = parseAngle(angle, "$angle");
@@ -52,10 +54,30 @@ export default function createFunctions({
 
       const result = canvas.toBuffer("image/png");
 
-      return new sass.types.String(`url(${resolver(result)})`);
+      if (!optimize) {
+        return wrapResult(resolver(result));
+      }
+
+      if (typeof done !== "function") {
+        throw new AssertionError(
+          "Cannot be enabled when rendering synchronously.",
+          "options.optimize"
+        );
+      }
+
+      imagemin
+        .buffer(result, {
+          plugins: [imageminOptipng({ optimizationLevel: 7 })],
+        })
+        .then((optimized) => done(wrapResult(resolver(optimized))));
     },
   };
 }
 
-const defaultResolver = (result: Buffer): string =>
-  `data:image/png;base64,${result.toString("base64")}`;
+function defaultResolver(result: Buffer): string {
+  return `data:image/png;base64,${result.toString("base64")}`;
+}
+
+function wrapResult(result: string) {
+  return new sass.types.String(`url(${result})`);
+}

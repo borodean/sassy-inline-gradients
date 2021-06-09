@@ -4,7 +4,7 @@ import sass from "sass";
 import createFunctions from "../src/createFunctions";
 import samples from "../src/test-samples";
 
-const output = [];
+const output: string[] = [];
 
 output.push(`
   <style>
@@ -36,27 +36,38 @@ output.push(`
   </style>
 `);
 
-samples.forEach((sample, index) => {
-  const result = sass.renderSync({
-    data: `
-      .sample-${index}-inline {
-        background-image: inline-linear-gradient(50px, ${sample});
-      }
+Promise.all(
+  samples.map(
+    (sample, index) =>
+      new Promise<void>((resolve, reject) => {
+        sass.render(
+          {
+            data: `
+              .sample-${index}-inline {
+                background-image: inline-linear-gradient(50px, ${sample});
+              }
 
-      .sample-${index}-native {
-        background-image: linear-gradient(${sample});
-      }
-    `,
-    functions: createFunctions(),
-  });
-
-  output.push(`
-    <style>${result.css.toString()}</style>
-    <div class="container">
-      <div class="sample sample-inline sample-${index}-inline"></div>
-      <div class="sample sample-native sample-${index}-native"></div>
-    </div>
-  `);
-});
-
-fs.writeFileSync("test-page.html", output.join("\n"));
+              .sample-${index}-native {
+                background-image: linear-gradient(${sample});
+              }
+          `,
+            functions: createFunctions(),
+          },
+          (err, result) => {
+            if (err) {
+              reject(err);
+            } else {
+              output.push(`
+                <style>${result.css.toString()}</style>
+                <div class="container">
+                  <div class="sample sample-inline sample-${index}-inline"></div>
+                  <div class="sample sample-native sample-${index}-native"></div>
+                </div>
+              `);
+              resolve();
+            }
+          }
+        );
+      })
+  )
+).then(() => fs.writeFileSync("test-page.html", output.join("\n")));

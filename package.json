@@ -1,6 +1,6 @@
 {
   "name": "sassy-inline-gradients",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Sass extension to inline gradients as base64-encoded images",
   "keywords": [
     "base64",
@@ -40,10 +40,14 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "canvas": "^2.0.0"
+    "canvas": "^2.0.0",
+    "imagemin": "^7.0.1",
+    "imagemin-optipng": "^8.0.0"
   },
   "devDependencies": {
     "@babel/preset-typescript": "^7.13.0",
+    "@types/imagemin": "^7.0.0",
+    "@types/imagemin-optipng": "^5.2.0",
     "@types/jest": "^26.0.23",
     "@types/jest-image-snapshot": "^4.3.0",
     "@types/lodash": "^4.14.170",

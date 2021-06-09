@@ -23,6 +23,9 @@ module.exports = {
     "typescript-sort-keys",
   ],
   rules: {
+    // Disable the rules that doesn't provide much value in TypeScript:
+    "consistent-return": "off",
+
     // Group the imports in a more structured way:
     "import/order": [
       "error",
@@ -52,8 +55,12 @@ module.exports = {
     "typescript-sort-keys/string-enum": "error",
 
     // Ignores variable references if the declaration is in an upper scope
-    // (still reports if it's in the same scope as the declaration):
-    "@typescript-eslint/no-use-before-define": ["error", { variables: false }],
+    // (still reports if it's in the same scope as the declaration). Also
+    // ignores hoisted function declarations:
+    "@typescript-eslint/no-use-before-define": [
+      "error",
+      { functions: false, variables: false },
+    ],
 
     // Validate that TSDoc comments conform to the specification:
     "tsdoc/syntax": "error",
