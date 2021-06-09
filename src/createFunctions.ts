@@ -50,8 +50,6 @@ export default function createFunctions({
       ctx.fillStyle = gradient;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      canvas.toBuffer().toString();
-
       return new sass.types.String(`url(${resolver(canvas)})`);
     },
   };
