@@ -17,8 +17,8 @@ samples.forEach((sample) => {
       }
     `,
     functions: createFunctions({
-      resolver: (canvas) => {
-        totalSize += canvas.toBuffer().length;
+      resolver: (result) => {
+        totalSize += result.length;
         return "none";
       },
     }),

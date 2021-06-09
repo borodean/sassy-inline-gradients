@@ -1,4 +1,4 @@
-import { Canvas, createCanvas } from "canvas";
+import { createCanvas } from "canvas";
 import sass from "sass";
 
 import parseAngle from "./parsers/parseAngle";
@@ -6,7 +6,7 @@ import parseColorStops from "./parsers/parseColorStops";
 import parseSize from "./parsers/parseSize";
 
 type Options = {
-  resolver?: (canvas: Canvas) => string;
+  resolver?: (result: Buffer) => string;
 };
 
 export default function createFunctions({
@@ -50,10 +50,12 @@ export default function createFunctions({
       ctx.fillStyle = gradient;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      return new sass.types.String(`url(${resolver(canvas)})`);
+      const result = canvas.toBuffer("image/png");
+
+      return new sass.types.String(`url(${resolver(result)})`);
     },
   };
 }
 
-const defaultResolver = (canvas: Canvas): string =>
-  canvas.toDataURL("image/png");
+const defaultResolver = (result: Buffer): string =>
+  `data:image/png;base64,${result.toString("base64")}`;
