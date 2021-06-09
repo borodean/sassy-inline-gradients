@@ -1,1 +1,3 @@
-export { default } from "./createFunctions";
+import createFunctions from "./createFunctions";
+
+export = createFunctions;
