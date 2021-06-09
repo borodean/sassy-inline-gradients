@@ -1,6 +1,10 @@
 import sass from "sass";
 
-import { assertNumber, assertPositive, assertUnit } from "helpers/assertions";
+import {
+  assertNumber,
+  assertPositive,
+  assertUnit,
+} from "../helpers/assertions";
 
 export default function parseSize(
   size: sass.types.SassType,

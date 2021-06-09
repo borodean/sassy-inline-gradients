@@ -1,9 +1,13 @@
 import sass from "sass";
 
-import { assertList, assertMinLength } from "helpers/assertions";
-import { fixMissingOffsets, fixOverlaps, mapList } from "helpers/color-stops";
-import { ColorStop } from "helpers/types";
-import parseColorStop from "parsers/parseColorStop";
+import { assertList, assertMinLength } from "../helpers/assertions";
+import {
+  fixMissingOffsets,
+  fixOverlaps,
+  mapList,
+} from "../helpers/color-stops";
+import { ColorStop } from "../helpers/types";
+import parseColorStop from "./parseColorStop";
 
 export default function parseColorStops(
   stops: sass.types.SassType,

@@ -1,8 +1,8 @@
 import sass from "sass";
 
-import { assertColor, AssertionError } from "helpers/assertions";
-import { RawColorStop } from "helpers/types";
-import parseOffset from "parsers/parseOffset";
+import { assertColor, AssertionError } from "../helpers/assertions";
+import { RawColorStop } from "../helpers/types";
+import parseOffset from "./parseOffset";
 
 export default function parseColorStop(
   stop: sass.types.SassType,

@@ -1,6 +1,6 @@
 import sass from "sass";
 
-import { ColorStop, RawColorStop } from "helpers/types";
+import { ColorStop, RawColorStop } from "./types";
 
 export function fixOverlaps(stops: RawColorStop[]): RawColorStop[] {
   let largestOffset = 0;

@@ -1,9 +1,9 @@
 import { Canvas, createCanvas } from "canvas";
 import sass from "sass";
 
-import parseAngle from "parsers/parseAngle";
-import parseColorStops from "parsers/parseColorStops";
-import parseSize from "parsers/parseSize";
+import parseAngle from "./parsers/parseAngle";
+import parseColorStops from "./parsers/parseColorStops";
+import parseSize from "./parsers/parseSize";
 
 type Options = {
   resolver?: (canvas: Canvas) => string;

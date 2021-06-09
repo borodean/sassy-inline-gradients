@@ -1,6 +1,6 @@
 import sass from "sass";
 
-import { AssertionError, assertNumber } from "helpers/assertions";
+import { AssertionError, assertNumber } from "../helpers/assertions";
 
 export default function parseOffset(
   offset: sass.types.SassType,

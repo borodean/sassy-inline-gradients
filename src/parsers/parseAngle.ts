@@ -1,11 +1,11 @@
 import sass from "sass";
 
-import { AssertionError } from "helpers/assertions";
+import { AssertionError } from "../helpers/assertions";
 import {
   convertDegreesToRadians,
   convertGradiansToRadians,
   convertTurnsToRadians,
-} from "helpers/converters";
+} from "../helpers/converters";
 
 export default function parseAngle(
   angle: sass.types.SassType,
