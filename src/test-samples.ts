@@ -47,7 +47,7 @@ const samples = [
   "90deg, red 10px, green 35px, blue 40px",
 
   /* Test mixed units: */
-  "90deg, red, green 20px, blue 60%, black",
+  "90deg, red 0, green 20px, blue 60%, black",
 
   /* Test overlapping color stop offsets: */
   "90deg, red, yellow -200%, green 30%, cyan 20%, blue",
