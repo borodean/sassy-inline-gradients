@@ -24,14 +24,23 @@ output.push(`
     }
 
     .container {
-      display: flex;
       margin: 0 5px 5px 0;
+      width: 100px;
+    }
+
+    .samples {
+      display: flex;
     }
 
     .sample {
+      background-color: white;
       background-size: 100% 100%;
       height: 50px;
       width: 50px;
+    }
+
+    .label {
+      font: 10px/1 monospace;
     }
   </style>
 `);
@@ -60,8 +69,11 @@ Promise.all(
               output.push(`
                 <style>${result.css.toString()}</style>
                 <div class="container">
-                  <div class="sample sample-inline sample-${index}-inline"></div>
-                  <div class="sample sample-native sample-${index}-native"></div>
+                  <div class="samples">
+                    <div class="sample sample-inline sample-${index}-inline"></div>
+                    <div class="sample sample-native sample-${index}-native"></div>
+                  </div>
+                  <div class="label">${sample}</div>
                 </div>
               `);
               resolve();
