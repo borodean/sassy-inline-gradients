@@ -28,18 +28,18 @@ export function fixMissingOffsets(stops: RawColorStop[]): ColorStop[] {
   const sequence: RawColorStop[] = [];
   const result: ColorStop[] = [];
 
-  stops.forEach(({ color, offset }) => {
+  stops.forEach(({ offset, premultiplied }) => {
     if (offset === undefined) {
-      sequence.push({ color, offset });
+      sequence.push({ offset, premultiplied });
     } else {
       result.push(
         ...sequence.map((foo, index) => ({
-          color: foo.color,
           offset:
             prevOffset +
             ((index + 1) * (offset - prevOffset)) / (sequence.length + 1),
+          premultiplied: foo.premultiplied,
         })),
-        { color, offset }
+        { offset, premultiplied }
       );
 
       sequence.length = 0;
@@ -66,4 +66,15 @@ export function mapList<T extends sass.types.SassType, U>(
   }
 
   return result;
+}
+
+export function premultiply(color: sass.types.Color): sass.types.Color {
+  const alpha = color.getA();
+
+  return new sass.types.Color(
+    color.getR() * alpha,
+    color.getG() * alpha,
+    color.getB() * alpha,
+    alpha
+  );
 }

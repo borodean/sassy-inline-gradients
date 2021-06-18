@@ -28,29 +28,32 @@ export default function createFunctions({
         "$color-stops"
       );
 
-      const width = Math.round(parsedSize * Math.sin(parsedAngle));
-      const height = Math.round(parsedSize * Math.cos(parsedAngle));
+      const xa = Math.round(parsedSize * Math.sin(parsedAngle));
+      const ya = Math.round(parsedSize * Math.cos(parsedAngle));
 
-      const canvas = createCanvas(
-        Math.max(Math.abs(width), 1),
-        Math.max(Math.abs(height), 1)
-      );
+      const width = Math.max(Math.abs(xa), 1);
+      const height = Math.max(Math.abs(ya), 1);
 
+      const canvas = createCanvas(width, height);
       const ctx = canvas.getContext("2d");
 
       const gradient = ctx.createLinearGradient(
-        width > 0 ? 0 : -width,
-        height > 0 ? height : 0,
-        width > 0 ? width : 0,
-        height > 0 ? 0 : -height
+        xa > 0 ? 0 : -xa,
+        ya > 0 ? ya : 0,
+        xa > 0 ? xa : 0,
+        ya > 0 ? 0 : -ya
       );
 
       parsedStops.forEach((stop) => {
-        gradient.addColorStop(stop.offset, stop.color);
+        gradient.addColorStop(stop.offset, stop.premultiplied);
       });
 
       ctx.fillStyle = gradient;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillRect(0, 0, width, height);
+
+      const imageData = ctx.getImageData(0, 0, width, height);
+      unpremultiply(imageData);
+      ctx.putImageData(imageData, 0, 0);
 
       const result = canvas.toBuffer("image/png");
 
@@ -80,4 +83,17 @@ function defaultResolver(result: Buffer): string {
 
 function wrapResult(result: string) {
   return new sass.types.String(`url(${result})`);
+}
+
+function unpremultiply(imageData: ImageData): void {
+  for (let i = 0; i < imageData.data.length; i += 4) {
+    const factor = imageData.data[i + 3] / 255;
+
+    if (factor !== 0) {
+      /* eslint-disable no-param-reassign */
+      imageData.data[i] /= factor;
+      imageData.data[i + 1] /= factor;
+      imageData.data[i + 2] /= factor;
+    }
+  }
 }

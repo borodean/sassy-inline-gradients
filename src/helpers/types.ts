@@ -1,6 +1,6 @@
 export type RawColorStop = {
-  color: string;
   offset?: number;
+  premultiplied: string;
 };
 
 export type ColorStop = Required<RawColorStop>;

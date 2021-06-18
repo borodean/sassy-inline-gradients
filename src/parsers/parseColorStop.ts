@@ -1,6 +1,7 @@
 import sass from "sass";
 
 import { assertColor, AssertionError } from "../helpers/assertions";
+import { premultiply } from "../helpers/color-stops";
 import { RawColorStop } from "../helpers/types";
 import parseOffset from "./parseOffset";
 
@@ -11,7 +12,7 @@ export default function parseColorStop(
 ): RawColorStop {
   if (stop instanceof sass.types.Color) {
     return {
-      color: stop.toString(),
+      premultiplied: premultiply(stop).toString(),
     };
   }
 
@@ -19,8 +20,8 @@ export default function parseColorStop(
     assertColor(stop.getValue(0), name);
 
     return {
-      color: stop.getValue(0).toString(),
       offset: parseOffset(stop.getValue(1), gradientSize, name),
+      premultiplied: premultiply(stop.getValue(0)).toString(),
     };
   }
 
