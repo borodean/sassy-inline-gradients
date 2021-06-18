@@ -54,6 +54,11 @@ const samples = [
 
   /* Test non-default trailing color stop offsets: */
   "90deg, red 30%, green, blue 70%",
+
+  /* Transparent (pre-multiplication test) */
+  "90deg, red, transparent, blue",
+  "90deg, red, rgba(0, 255, 0, 0), blue",
+  "90deg, red, rgba(0, 255, 0, 0.1), blue",
 ];
 
 export default samples;
