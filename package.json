@@ -1,6 +1,6 @@
 {
   "name": "sassy-inline-gradients",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Sass extension to inline gradients as base64-encoded images",
   "keywords": [
     "base64",
