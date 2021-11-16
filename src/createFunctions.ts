@@ -1,13 +1,54 @@
-import { createCanvas } from "canvas";
 import imagemin from "imagemin";
 import imageminOptipng from "imagemin-optipng";
+import puppeteer from "puppeteer";
 import sass from "sass";
 
 import { AssertionError } from "./helpers/assertions";
 import { Options } from "./helpers/types";
 import parseAngle from "./parsers/parseAngle";
-import parseColorStops from "./parsers/parseColorStops";
 import parseSize from "./parsers/parseSize";
+
+async function whatever(width: number, height: number, bg: string) {
+  const page = await getPage();
+  await page.evaluate(
+    (width: number, height: number, bg: string) => {
+      const div = document.createElement("div");
+      div.id = "sample";
+      div.style.width = `${width}px`;
+      div.style.height = `${height}px`;
+      div.style.background = bg;
+      document.body.appendChild(div);
+      return div;
+    },
+    width,
+    height,
+    bg
+  );
+  const element = await page.$("#sample");
+  const result = await element?.screenshot();
+  await page.reload();
+
+  if (!(result instanceof Buffer)) {
+    throw new Error();
+  }
+
+  return result;
+}
+
+process.on("beforeExit", () => {
+  console.log("exit");
+});
+
+let pageInstance: puppeteer.Page | undefined;
+
+async function getPage(): Promise<puppeteer.Page> {
+  if (pageInstance) {
+    return pageInstance;
+  }
+
+  const browser = await puppeteer.launch();
+  return await browser.newPage();
+}
 
 export default function createFunctions({
   optimize = false,
@@ -22,11 +63,6 @@ export default function createFunctions({
     ) => {
       const parsedSize = parseSize(size, "$size");
       const parsedAngle = parseAngle(angle, "$angle");
-      const parsedStops = parseColorStops(
-        colorStops,
-        parsedSize,
-        "$color-stops"
-      );
 
       const xa = Math.round(parsedSize * Math.sin(parsedAngle));
       const ya = Math.round(parsedSize * Math.cos(parsedAngle));
@@ -34,32 +70,9 @@ export default function createFunctions({
       const width = Math.max(Math.abs(xa), 1);
       const height = Math.max(Math.abs(ya), 1);
 
-      const canvas = createCanvas(width, height);
-      const ctx = canvas.getContext("2d");
-
-      const gradient = ctx.createLinearGradient(
-        xa > 0 ? 0 : -xa,
-        ya > 0 ? ya : 0,
-        xa > 0 ? xa : 0,
-        ya > 0 ? 0 : -ya
-      );
-
-      parsedStops.forEach((stop) => {
-        gradient.addColorStop(stop.offset, stop.premultiplied);
-      });
-
-      ctx.fillStyle = gradient;
-      ctx.fillRect(0, 0, width, height);
-
-      const imageData = ctx.getImageData(0, 0, width, height);
-      unpremultiply(imageData);
-      ctx.putImageData(imageData, 0, 0);
-
-      const result = canvas.toBuffer("image/png");
-
-      if (!optimize) {
-        return wrapResult(resolver(result));
-      }
+      // if (!optimize) {
+      //   return wrapResult(resolver(result));
+      // }
 
       if (typeof done !== "function") {
         throw new AssertionError(
@@ -68,11 +81,19 @@ export default function createFunctions({
         );
       }
 
-      imagemin
-        .buffer(result, {
-          plugins: [imageminOptipng({ optimizationLevel: 7 })],
+      whatever(width, height, `linear-gradient(${angle}, ${colorStops})`)
+        .then((result) => {
+          if (optimize) {
+            return imagemin.buffer(result, {
+              plugins: [imageminOptipng({ optimizationLevel: 7 })],
+            });
+          }
+
+          return result;
         })
-        .then((optimized) => done(wrapResult(resolver(optimized))));
+        .then((optimized) => {
+          done(wrapResult(resolver(optimized)));
+        });
     },
   };
 }
@@ -83,17 +104,4 @@ function defaultResolver(result: Buffer): string {
 
 function wrapResult(result: string) {
   return new sass.types.String(`url(${result})`);
-}
-
-function unpremultiply(imageData: ImageData): void {
-  for (let i = 0; i < imageData.data.length; i += 4) {
-    const factor = imageData.data[i + 3] / 255;
-
-    if (factor !== 0) {
-      /* eslint-disable no-param-reassign */
-      imageData.data[i] /= factor;
-      imageData.data[i + 1] /= factor;
-      imageData.data[i + 2] /= factor;
-    }
-  }
 }

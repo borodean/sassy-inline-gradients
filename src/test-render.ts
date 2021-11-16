@@ -15,11 +15,6 @@ export function render(input: string, options: Options = {}): Promise<Buffer> {
   });
 }
 
-export function renderSync(input: string, options: Options = {}): Buffer {
-  const result = sass.renderSync(getOptions(input, options));
-  return extractImage(result.css);
-}
-
 function getOptions(input: string, options: Options): sass.Options {
   return {
     data: `body { background: ${input} }`,
