@@ -1,6 +1,7 @@
 module.exports = {
   extends: [
     /* Airbnb JavaScript Style Guide */
+    "airbnb-base",
     "airbnb-typescript/base",
 
     /* Prettier */
